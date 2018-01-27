@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello
+spec:
+  # limit the number of revisions to keep around.
+  revisionHistoryLimit: 15
+
+  # Strategy: Defines how the deployments should do updates by the variable type.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  # Replicas: Defines the number of pods to start run.
+  replicas: 8
+
+  # Selector: Defines the labels that the service will match on.
+  selector:
+    matchLabels:
+      app: hello
+
+  # Template: Defines the configuration that each put managed by this deployment will receive.
+  template:
+    metadata:
+      name: hello
+      labels:
+        app: hello
+        visualize: "true"
+
+    spec:
+      containers:
+      - name: hello
+        image: kaspernissen/hello-go:v1
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 15Mi
+          limits:
+            memory: 50Mi
+        ports:
+          - name: http
+            containerPort: 8080
+
+        # livenessProbe: Let's Kubernetes know when to restart a Container
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+
+        # readinessProbe: Let's Kubernetes know when a container is ready to start accepting traffic.
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5

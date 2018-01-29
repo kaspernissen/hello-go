@@ -14,7 +14,7 @@ spec:
       maxSurge: 1
 
   # Replicas: Defines the number of pods to start run.
-  replicas: 8
+  replicas: 4
 
   # Selector: Defines the labels that the service will match on.
   selector:
@@ -30,9 +30,10 @@ spec:
         visualize: "true"
 
     spec:
+      terminationGracePeriodSeconds: 5
       containers:
       - name: hello
-        image: kaspernissen/hello-go:v1
+        image: kaspernissen/hello-go:arm_v1
         imagePullPolicy: Always
         resources:
           requests:

@@ -15,6 +15,12 @@ build:
 push:
 	docker push $(IMAGE):$(TAG)
 
+
+local:
+	@rm -f hello
+	CGO_ENABLED=0 GOOS=darwin go build hello.go
+	./hello
+
 delete:
 	kubectl delete -f kubernetes/deployment.yaml
 	kubectl delete -f kubernetes/svc.yaml
@@ -22,6 +28,7 @@ delete:
 deploy:
 	kubectl apply -f kubernetes/deployment.yaml
 	kubectl apply -f kubernetes/svc.yaml
+	kubectl rollout status deploy/hello
 
 ping:
 	while sleep 0.5; do curl http://$(IP):$(PORT)/ping; done
